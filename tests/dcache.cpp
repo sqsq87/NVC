@@ -1137,6 +1137,12 @@ VOID AfterCrush()
         else if(strcmp(type_base,INT) == 0){
             step = 4;
         }
+	else if (strcmp(type_base, "uint64_t") == 0) {
+	    step = 8;
+        }
+        else if (strcmp(type_base, "uint8_t") == 0) {
+            step = 1;
+        }
         all_data += size_base * step;
         critical_data_count[i] = size_base * step;
         for(UINT64 it = 0; it<size_base; it++)
