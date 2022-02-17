@@ -1,0 +1,17 @@
+
+/home/vagrant/NVC/pin-2.14-71313-gcc.4.4.7-linux/intel64/bin/pinbin -p32 /home/vagrant/tools/NVC/pin-2.14-71313-gcc.4.4.7-linux/ia32/bin/pinbin -t obj-intel64//dcache.so -- ../Benchmarks/CrashTests/Level-Hashing/level_hashing/level 2 200 
+*************** Dump Data from Thread 0 ****************
+
+33779:0x7fa0334e2b20:movb  (%rdi), %al:realloc::0
+33778:0x7fa0334d3d74:callq  0x7fa0334e2b20:_dl_rtld_di_serinfo::0
+33753:0x7fa0334d47b9:callq  0x7fa0334d3d20:_dl_rtld_di_serinfo::0
+33551:0x7fa0334d4968:callq  0x7fa0334d3ea0:_dl_rtld_di_serinfo::0
+33467:0x7fa0334d8ff2:callq  0x7fa0334d4810:_dl_rtld_di_serinfo::0
+33412:0x7fa0334df510:callq  0x7fa0334d8f00:_dl_find_dso_for_object::0
+33396:0x400a16:callq  0x4007d0:main::0
+18206:0x7f87b7555b43:callq  %rax:__libc_start_main::0
+17431:0x4008b4:callq  0x4007f0:_start::0
+1:(nil)::THREAD[0]_ROOT_CTXT::0online collection time 1.163840, offline analysis time 0.008995
+
+Total call paths=33788
+Peak RSS=682196

@@ -1,0 +1,157 @@
+Non-Volatile Memory Crash Test Tool (NVC) is a PIN-based crash simulator. The tool simulates a multi-level cache hierarchy with cache coherence and main memory; NVCT also includes a random crash generator, a set of APIs to support the configuration of crash tests and application restart, and a component to examine data inconsistency for post-crash analysis. 
+
+
+--------------------------------------------------
+Supported platform
+--------------------------------------------------
+1. Linux x86_64
+
+--------------------------------------------------
+Requirements	
+--------------------------------------------------
+
+0. Ensure you have g++ 4.8.2 or higher as the default compiler and make sure you compile everything with -std=c++11 flag
+
+1. Download and install the latest Pin framework matching your platform from
+http://www.pintool.org/downloads.html. In case you don't download Pin, our build script has an option to automatically download from WWW.
+* I have tested the current release only on Pin 2.14 rev 71313 *
+
+2. Linux kernel version 4.x may have problem on runing Pin 2.14. Solution: https://github.com/s5z/zsim/issues/109
+
+--------------------------------------------------
+Compiling
+--------------------------------------------------
+
+0. To build the environment for Non-Volatile Memory Crash Test Tool, simply type "sh build.sh"
+   This will configure the environment of building Non-Volatile Main Memory Crash Test Tool. 
+
+1. Type "make" to build NVC and related library
+
+If there is PIN test error during building the NVC: 
+* To fix pin general issue, get root access and run "echo 0 > /proc/sys/kernel/yama/ptrace_scope"
+
+If there is issue about using c++11 to compile:
+* Change PIN setting and enable c++11, "vim /pin-2.14-71313-gcc.4.4.7-linux/source/tools/Config/makefile.unix.config".
+   In line 84 "TOOL_CXXFLAGS_NOOPT", adding "-std=c++11" at the end of the line.
+
+If you want to recompile NVC instead of any other libraies:
+* In test folder, run "make"
+   This will build the NVC
+   
+--------------------------------------------------
+How to run NVC
+--------------------------------------------------
+The cache simulator code is in folder "tests". Before run NVC, change cache configuration first in "tests/dcache.cpp" or by adding KNOB command flag in PIN.
+
+A. Change code in tests/dcache.cpp:
+	The maxmium number of instruction crash could happens:      line 57   INS_MAX
+	The maxmium number of thread application use:               line 62   MAX_THREAD_NUM
+
+B. Knob command flag:
+	```
+	-t   how many thread using in application
+	-p   private cache num, atmost two thread have one private cache
+	-s1  l1 cache size in kilobytes
+	-a1  l1 cache associativity (1 for direct mapped)
+	-l1  l1 cacheline size in bytes
+	-s2  l2 cache size in kilobytes
+	-a2  l2 cache associativity (1 for direct mapped)
+	-l2  l2 cacheline size in bytes
+	-s3  l3 cache size in kilobytes
+	-a3  l3 cache associativity (1 for direct mapped)
+	-l3  l3 cacheline size in bytes
+	```
+
+Run NVC:
+The command to run NVC is:
+/home/cc/NVC/pin-2.14-71313-gcc.4.4.7-linux/intel64/bin/pinbin -p32 /home/cc/tools/NVC/pin-2.14-71313-gcc.4.4.7-linux/ia32/bin/pinbin -t obj-intel64//dcache.so -- /path/to/application 
+
+Crash test for application with single thread can simply use script in folder "tests"
+E.g. ./run /path/to/application
+--------------------------------------------------
+Documentation of NVC's key APIs 
+--------------------------------------------------
+
+1. void start_crash(); void end_crash();
+	Description: 
+   		Define where a crash could happen.
+		A crash could happen within the code region encapsulated by the two APIs.
+	Arguments:
+		None
+2. void critical_data(void const *p, char type[], int const size); 
+	Description:
+		Collect the address, type and size information of a critical data object.
+	Arguments:
+		p: critical data object address.
+		type: critical data object type, can be CHAR, INT, FLOAT, DOUBLE, LONG LONG 
+                size: critical data object size.
+
+3. void cache_line_write_back(void const *p);
+	Description:
+		Writes back a dirty cache line containing the address p, and marks the cache line as clean in the cache hierarchy.
+		This API is used to emulate CLWB.
+	Arguments:
+		p: the address need to be written back.
+
+4. void flush_cache_line(void const *p);
+	Description:
+		Flush a cache line containing address p, invalidate this cache line from every level of the cache hierarchy in the cache coherence domain. 
+		This API is used to emulate CLFLUSH and CLFLUSHOPT.
+		
+5. void flush_whole_cache();
+	Description:
+		writes back all modified cache lines in the processor's internal cache to main memory and does not invalidate (flush) the internal caches. 
+		This API is used to emulate WBNOINVD
+
+6. void write_back_invalidate_cache();
+	Description:
+		 Writes back all dirty cache lines in the processor\textquotesingle s cache to main memory and invalidates (flushes) the cache hierarchy. 
+		 This API is used to emulate WBINVD.
+
+6. bool read_cache(void *dst, void const *src, size_t size);
+	Description:
+		 Read specified number of bytes in simulated cache from a source address to a destination address. 
+		 The function returns whether the data in source address is in simulated cache.
+
+7. bool read_memory(void *dst, void const *src, size_t size);
+	Description:
+		 Read specified number of bytes in simulated memory from a source address to a destination address. 
+		 The function returns whether the data in source address is in simulated memory.
+		 
+---------------------------------------------------
+Example to use 
+---------------------------------------------------
+We provide few examples to show how to use NVC to trigger a crash and recompute based on carsh result. 
+The crash examples can be found under "Benchmarks/CrashTests"; 
+The recomputation examples can be found under "Benchmarks/Recomputation".
+
+
+---------------------------------------------------
+Useful scripts
+---------------------------------------------------
+NVC provides some scripts for doing large amount of crash tests and recompuation tests at the same time by lerveraging Linux screen.
+The scripts can be found under "Scripts"
+
+
+---------------------------------------------------
+General issues
+---------------------------------------------------
+        
+> There is a known problem of using Pin on Linux systems that prevent the use
+> of ptrace attach via the sysctl /proc/sys/kernel/yama/ptrace_scope.
+> In this case Pin is not able to use its default (parent) injection mode.
+> To resolve this, either use the "-injection child" option or 
+> set the kernel/yama/ptrace_scope sysctl to 0.
+
+So what we do is geting root access and seting the kernel/yama/ptrace_scope sysctl to 0
+
+echo 0 > /proc/sys/kernel/yama/ptrace_scope
+
+--------------------------------------------------
+Publication based on NVC
+--------------------------------------------------
+Jie Ren, Kai Wu, and Dong Li. 2018. Understanding Application Recomputability without Crash Consistency in Non-Volatile Memory. In Proceedings of the Workshop on Memory Centric High Performance Computing (MCHPC'18). ACM, New York, NY, USA, 27-36. DOI: https://doi.org/10.1145/3286475.3286476
+
+Jie Ren, Kai Wu and Dong Li. "Exploring Non-Volatility of Non-Volatile Memory for High Performance Computing Under Failures," 2020 IEEE International Conference on Cluster Computing (CLUSTER), 2020, pp. 237-247, doi: 10.1109/CLUSTER49012.2020.00034.
+
+

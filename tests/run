@@ -1,0 +1,12 @@
+#!/bin/bash
+
+cmd=$"time /home/vagrant/NVC/pin-2.14-71313-gcc.4.4.7-linux/intel64/bin/pinbin -p32 /home/vagrant/tools/NVC/pin-2.14-71313-gcc.4.4.7-linux/ia32/bin/pinbin -t obj-intel64//dcache.so -- "$1
+#echo $cmd
+
+if [ "$1" != "" ]; then
+    echo "Crash Test"
+    $cmd
+else
+    echo "Enter the path to application you want to do crash test!"
+fi
+
