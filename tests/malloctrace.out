@@ -1,3 +1,67 @@
-Count 1001
-The num of consistent variable is 0
-The num of array we care is 0
+0xdab100 4 uint8_t
+0xdab104 16 uint8_t
+0xdab114 15 uint8_t
+0xdab123 16 uint8_t
+0xdab133 15 uint8_t
+0xdab142 16 uint8_t
+0xdab152 15 uint8_t
+0xdab161 16 uint8_t
+0xdab171 15 uint8_t
+0xdab180 4 uint8_t
+0xdab184 16 uint8_t
+0xdab194 15 uint8_t
+0xdab1a3 16 uint8_t
+0xdab1b3 15 uint8_t
+0xdab1c2 16 uint8_t
+0xdab1d2 15 uint8_t
+0xdab1e1 16 uint8_t
+0xdab1f1 15 uint8_t
+0xdab200 4 uint8_t
+0xdab204 16 uint8_t
+0xdab214 15 uint8_t
+0xdab223 16 uint8_t
+0xdab233 15 uint8_t
+0xdab242 16 uint8_t
+0xdab252 15 uint8_t
+0xdab261 16 uint8_t
+0xdab271 15 uint8_t
+0xdab280 4 uint8_t
+0xdab284 16 uint8_t
+0xdab294 15 uint8_t
+0xdab2a3 16 uint8_t
+0xdab2b3 15 uint8_t
+0xdab2c2 16 uint8_t
+0xdab2d2 15 uint8_t
+0xdab2e1 16 uint8_t
+0xdab2f1 15 uint8_t
+0xdab380 4 uint8_t
+0xdab384 16 uint8_t
+0xdab394 15 uint8_t
+0xdab3a3 16 uint8_t
+0xdab3b3 15 uint8_t
+0xdab3c2 16 uint8_t
+0xdab3d2 15 uint8_t
+0xdab3e1 16 uint8_t
+0xdab3f1 15 uint8_t
+0xdab400 4 uint8_t
+0xdab404 16 uint8_t
+0xdab414 15 uint8_t
+0xdab423 16 uint8_t
+0xdab433 15 uint8_t
+0xdab442 16 uint8_t
+0xdab452 15 uint8_t
+0xdab461 16 uint8_t
+0xdab471 15 uint8_t
+0xdab050 1 uint64_t
+0xdab058 1 uint64_t
+0xdab060 1 uint64_t
+0xdab068 1 uint64_t
+0xdab070 1 uint64_t
+0xdab078 1 uint8_t
+0xdab079 1 uint8_t
+0xdab080 1 uint64_t
+0xdab088 1 uint64_t
+0x7ffcf4361a90 1 uint64_t
+Count 300001
+The num of consistent variable is 1
+The num of array we care is 63

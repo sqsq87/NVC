@@ -1,0 +1,202 @@
+
+/home/vagrant/NVC/pin-2.14-71313-gcc.4.4.7-linux/intel64/bin/pinbin -p32 /home/vagrant/NVC/pin-2.14-71313-gcc.4.4.7-linux/ia32/bin/pinbin -t obj-intel64//dcache.so -- /home/vagrant/NVC/Benchmarks/CrashTests/Level-Hashing/level_hashing/level 2 200 
+
+For critical data: 
+The number of critical data in cache is 4.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.000000.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.733333.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 5.
+The inconsistency rate for critical data is 0.666667.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.733333.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.733333.
+The number of critical data in cache is 4.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.000000.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.733333.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 5.
+The inconsistency rate for critical data is 0.666667.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.733333.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.733333.
+The number of critical data in cache is 4.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.000000.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.733333.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 5.
+The inconsistency rate for critical data is 0.666667.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.733333.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.733333.
+The number of critical data in cache is 4.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.000000.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.733333.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 5.
+The inconsistency rate for critical data is 0.666667.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.733333.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.733333.
+The number of critical data in cache is 4.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.000000.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.733333.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 5.
+The inconsistency rate for critical data is 0.666667.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.733333.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.733333.
+The number of critical data in cache is 4.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.000000.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.733333.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 5.
+The inconsistency rate for critical data is 0.666667.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.733333.
+The number of critical data in cache is 16.
+The number of critical data in cache and value in mem are the same is 11.
+The inconsistency rate for critical data is 0.312500.
+The number of critical data in cache is 15.
+The number of critical data in cache and value in mem are the same is 4.
+The inconsistency rate for critical data is 0.733333.
+The number of critical data in cache is 8.
+The number of critical data in cache and value in mem are the same is 7.
+The inconsistency rate for critical data is 0.125000.
+The number of critical data in cache is 8.
+The number of critical data in cache and value in mem are the same is 7.
+The inconsistency rate for critical data is 0.125000.
+The number of critical data in cache is 8.
+The number of critical data in cache and value in mem are the same is 7.
+The inconsistency rate for critical data is 0.125000.
+The number of critical data in cache is 8.
+The number of critical data in cache and value in mem are the same is 7.
+The inconsistency rate for critical data is 0.125000.
+The number of critical data in cache is 8.
+The number of critical data in cache and value in mem are the same is 7.
+The inconsistency rate for critical data is 0.125000.
+The number of critical data in cache is 1.
+The number of critical data in cache and value in mem are the same is 0.
+The inconsistency rate for critical data is 1.000000.
+The number of critical data in cache is 1.
+The number of critical data in cache and value in mem are the same is 1.
+The inconsistency rate for critical data is 0.000000.
+The number of critical data in cache is 8.
+The number of critical data in cache and value in mem are the same is 8.
+The inconsistency rate for critical data is 0.000000.
+The number of critical data in cache is 8.
+The number of critical data in cache and value in mem are the same is 8.
+The inconsistency rate for critical data is 0.000000.
+
+The number of critical data is 826.
+
+Total inconsistency rate for critical data is 0.464891
+
+The num of all data in application is 169792, which is 165 K, 0 M.
+The num of dirty data in cache is 3042
+The inconsistency rate for all data is 0.017916.
+Memory footprint size is  169792, which is 165 K, 0 M.

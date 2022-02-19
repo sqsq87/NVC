@@ -13,6 +13,7 @@
 #include <sys/mman.h>
 #include <sys/time.h>
 #include <sstream>
+#include <inttypes.h>
 #include <time.h>
 #include "pin.H"
 #include "cctlib.H"
@@ -54,7 +55,7 @@ using namespace PinCCTLib;
 // CG class = D/E
 //453981865
 //#define INS_MAX 91913574283;
-const UINT64 INS_MAX = 100;
+const UINT64 INS_MAX = 30000;
 //#define MAX_FILE_PATH 128
 #define DOUBLE "double"
 #define INT "int"
@@ -1198,17 +1199,27 @@ VOID AfterCrush()
               }
               ADDRINT *pvalue;
               pvalue  = &temp_value;
+	      if (step == 1) {
+                  uint8_t* v = reinterpret_cast<uint8_t*>(pvalue);
+                  fprintf(memout, "%" PRIu8 "\n", *v);
+              }
               if(step == 4)
               {
                   int *v1 = reinterpret_cast<int*>(pvalue);
                   //memout<<*v1<<endl;
                   fprintf(memout,"%d\n",*v1);
               }
+              if (step == 8) {
+                  uint64_t *v2 = reinterpret_cast<uint64_t*>(pvalue);
+                  fprintf(memout, "%" PRIu64 "\n", *v2);
+              }
+              /*
               else{
                   double *v2 = reinterpret_cast<double*>(pvalue);
                   //memout<<*v2<<endl;
                   fprintf(memout,"%20.12e\n",*v2);
               }
+              */
               temp_mem_value = temp_value;
               if(ReadCache(temp_addr,step,temp_cache_value))
               {
@@ -1231,15 +1242,25 @@ VOID AfterCrush()
               else{
                 pvalue = &temp_mem_value;
               }
+              if (step == 1) {
+                  uint8_t *v = reinterpret_cast<uint8_t*>(pvalue);
+                  fprintf(cacheout, "%" PRIu8 "\n", *v);
+              }
               if(step == 4)
               {
                   int *v1 = reinterpret_cast<int*>(pvalue);
                   fprintf(cacheout,"%d\n",*v1);
               }
+              if (step == 8) {
+                  uint64_t *v2 = reinterpret_cast<uint64_t*>(pvalue);
+                  fprintf(cacheout, "%" PRIu64 "\n", *v2);
+              }
+              /*
               else{
                   double *v2 = reinterpret_cast<double*>(pvalue);
                   fprintf(cacheout,"%20.12e\n",*v2);
               }
+              */
           //}
         }
         //cd[i] = CountCrashDistance(addr_base,size_base);
