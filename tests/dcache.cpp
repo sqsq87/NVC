@@ -195,7 +195,7 @@ LOCALVAR DL2::CACHE *dl2;
 
 class PRIVATE_CACHE
 {
-  private:
+  public:
     //Cache controler info, the index of array tells recently which cache has the lastest data, the value of array tells the status of that cache line
     typedef boost::array<UINT8, MAX_THREAD_NUM> CC_INFO; // Important! initialize as 0
     typedef std::unordered_map<ADDRINT, CC_INFO> CC_MAP;
@@ -1025,22 +1025,29 @@ VOID AfterCrush()
     FILE *memout;
     FILE *cacheout;
     FILE *consistentout;
+    FILE *allcacheout;
     char memname[MAX_FILE_PATH] = "crush_mem.out.";
     char cachename[MAX_FILE_PATH] = "crush_cache.out.";
     char consistentname[MAX_FILE_PATH] = "consistent_variable.out.";
+    char crush_total_cache[MAX_FILE_PATH]="crush_total_cache.out.";
     gethostname(memname + strlen(memname), MAX_FILE_PATH - strlen(memname));
     gethostname(cachename + strlen(cachename), MAX_FILE_PATH - strlen(cachename));
     gethostname(consistentname + strlen(consistentname), MAX_FILE_PATH - strlen(consistentname));
+    gethostname(crush_total_cache + strlen(crush_total_cache), MAX_FILE_PATH - strlen(crush_total_cache));
     pid_t pid = getpid();
     sprintf(memname + strlen(memname), "%d", pid);
     sprintf(cachename + strlen(cachename), "%d", pid);
     sprintf(consistentname + strlen(consistentname), "%d", pid);
+    sprintf(crush_total_cache + strlen(crush_total_cache), "%d", pid);
     cerr << "\n Creating log file at:" << memname << "\n";
     cerr << "\n Creating log file at:" << cachename << "\n";
     cerr << "\n Creating log file at:" << consistentname << "\n";
+     cerr << "\n Creating log file at:" << crush_total_cache << "\n";
+
     memout = fopen(memname, "w");
     cacheout = fopen(cachename, "w");
     consistentout = fopen(consistentname,"w");
+    allcacheout = fopen(crush_total_cache,"w");
     ADDRINT temp_mem_value;
     ADDRINT temp_cache_value;
     ADDRINT temp_value;
@@ -1055,6 +1062,18 @@ VOID AfterCrush()
     UINT64 critical_data_count[128] = {0};
     ADDRINT *pvalue;
     UINT64 all_data = 0;
+    
+    for (UINT16 k=0; k<pdl1->_num; k++){
+    for (UINT16 i=0; i<KILO; i++){
+      for (UINT16 j=0; j<256; j++){
+        for (UINT16 a=0; a<pdl1->dl1[k]->_sets[i]._data[j]._lineSize; a++){
+        fprintf(allcacheout, "%d\n", pdl1->dl1[k]->_sets[i]._data[j].GetData(a));
+        }
+
+
+      }
+    }
+    }
 
     //seperate consistent data
     for(UINT16 i = 0; i<consistent_variable.size(); i++)

@@ -65,11 +65,12 @@ class CACHE_TAG
  */
 class CACHE_DATA
 {
-  private:
+  public:
     UINT8 _data[BLOCK_SIZE]={0}; //Store data as byte
     UINT8 _lineSize;
 
   public:
+    
     CACHE_DATA(UINT8 lineSize = 64) {
         _lineSize = lineSize;
         //for(UINT8 i = 0; i<_lineSize; i++)
@@ -324,6 +325,8 @@ class CACHE_DATA
           CACHE_DIRTY _dirty;
           CACHE_DATA _data;
      };
+    
+  
 
 /*!
  * Everything related to cache sets
@@ -515,9 +518,10 @@ class ROUND_ROBIN
 template <UINT32 MAX_ASSOCIATIVITY = 4>
 class LRU
 {
-  private:
+  public:
     CACHE_TAG _tags[MAX_ASSOCIATIVITY];
-    CACHE_DATA _data[MAX_ASSOCIATIVITY];
+     CACHE_DIRTY _dirty[MAX_ASSOCIATIVITY];
+   CACHE_DATA _data[MAX_ASSOCIATIVITY];
     CACHE_DIRTY _dirty[MAX_ASSOCIATIVITY];
     CACHE_VALID _valid[MAX_ASSOCIATIVITY];
     CACHE_MAP _map;
@@ -528,6 +532,7 @@ class LRU
     UINT8 _lineSize;
 
   public:
+ 
     LRU(UINT32 associativity = MAX_ASSOCIATIVITY)
     :_tagsLastIndex(MAX_ASSOCIATIVITY-1)
     {
@@ -798,9 +803,9 @@ class LRU
 template <UINT32 MAX_ASSOCIATIVITY = 4>
 class BIPLRU
 {
-  private:
+  public:
     CACHE_TAG _tags[MAX_ASSOCIATIVITY];
-    CACHE_DATA _data[MAX_ASSOCIATIVITY];
+   CACHE_DATA _data[MAX_ASSOCIATIVITY];
     CACHE_DIRTY _dirty[MAX_ASSOCIATIVITY];
     CACHE_VALID _valid[MAX_ASSOCIATIVITY];
     BIP_REPLACE _bip;
@@ -811,6 +816,7 @@ class BIPLRU
     UINT8 _lineSize;
 
   public:
+   
     BIPLRU(UINT32 associativity = MAX_ASSOCIATIVITY)
     :_tagsLastIndex(MAX_ASSOCIATIVITY-1)
     {
@@ -1260,7 +1266,7 @@ std::ostream & operator<< (std::ostream & out, const CACHE_BASE & cacheBase)
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
 class CACHE : public CACHE_BASE
 {
-  private:
+  public:
     SET _sets[MAX_SETS];
 
   public:
