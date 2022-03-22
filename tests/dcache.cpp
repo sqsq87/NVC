@@ -1067,9 +1067,14 @@ VOID AfterCrush()
     for (UINT16 i=0; i<KILO; i++){
       for (UINT16 j=0; j<256; j++){
         for (UINT16 a=0; a<pdl1->dl1[k]->_sets[i]._data[j]._lineSize; a++){
-        fprintf(allcacheout, "%d\n", pdl1->dl1[k]->_sets[i]._data[j].GetData(a));
+         // if (pdl1->dl1[k]->_sets[i]._dirty){
+        
+        
+        fprintf(allcacheout, "%x %d\n", pdl1->dl1[k]->_sets[i]._tags[j]._tag, pdl1->dl1[k]->_sets[i]._data[j].GetData(a));
+       // }
+        //<<8+j)<<6+a
         }
-
+//TraceFile <<hex<< addr << " " <<dec<< size <<" "<<type<< endl;
 
       }
     }

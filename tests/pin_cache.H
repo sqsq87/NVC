@@ -7,6 +7,7 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
+
 Redistributions of source code must retain the above copyright notice,
 this list of conditions and the following disclaimer.  Redistributions
 in binary form must reproduce the above copyright notice, this list of
@@ -51,7 +52,7 @@ MEMORY memory(1*1024);
  */
 class CACHE_TAG
 {
-  private:
+  public:
     ADDRINT _tag;
 
   public:
@@ -522,7 +523,6 @@ class LRU
     CACHE_TAG _tags[MAX_ASSOCIATIVITY];
      CACHE_DIRTY _dirty[MAX_ASSOCIATIVITY];
    CACHE_DATA _data[MAX_ASSOCIATIVITY];
-    CACHE_DIRTY _dirty[MAX_ASSOCIATIVITY];
     CACHE_VALID _valid[MAX_ASSOCIATIVITY];
     CACHE_MAP _map;
     UINT32 _tagsLastIndex;
