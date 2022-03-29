@@ -153,10 +153,8 @@ KNOB<UINT32>   KnobCacheL2LineSize(KNOB_MODE_WRITEONCE, "pintool",
 /*
 KNOB<UINT32>   KnobCacheL3Size(KNOB_MODE_WRITEONCE, "pintool",
     "-s3", "4", "l3 cache size in bytes in megabytes");
-
 KNOB<UINT32>   KnobCacheL3Associativity(KNOB_MODE_WRITEONCE, "pintool",
     "-a3", "64", "l3 cache associativity (1 for direct mapped)");
-
 KNOB<UINT32>   KnobCacheL3LineSize(KNOB_MODE_WRITEONCE, "pintool",
     "-l3", "64", "l3 cache size in bytes");
 */
@@ -239,19 +237,17 @@ class PRIVATE_CACHE
     void Flush();
     void ResetStats();
     */
-   BOOL EraseMAP();
+    BOOL EraseMAP();
 };
 
 BOOL PRIVATE_CACHE::EraseMAP(){
-  //first 指向第一个键值对
+    //first 指向第一个键值对
     CC_MAP::iterator first = dl1_map.begin();
     //last 指向最后一个键值对
     CC_MAP::iterator last = dl1_map.end();
     //删除[fist,last)范围内的键值对
     auto ret = dl1_map.erase(first, last);
 }
-
-
 
 UINT8 PRIVATE_CACHE::CountCD(ADDRINT addr){
   UINT8 dis = 0;
@@ -270,7 +266,6 @@ VOID PRIVATE_CACHE::CountDirtyCacheLine(){
   for(UINT8 i=0; i<_num; i++)
      dl1[i]->CountDirtyCacheLine();
 }
-
 
 BOOL PRIVATE_CACHE::ReadL1Cache(ADDRINT addr, UINT8 size, ADDRINT &data){
   /*
@@ -401,7 +396,7 @@ void PRIVATE_CACHE::Access(THREADID threadid, ADDRINT addr, UINT32 size, CACHE_B
 
       ASSERTX(it != dl1_map.end());
 
-      
+
       if (it->second[pindex] == INVALID) {
         //ASSERTX(!dl1[pindex]->AccessSingleLine(addr,step,accessType,cache_line));
         //For invalid state
@@ -604,11 +599,8 @@ namespace DL3
 {
     // 3rd level data cache: configurable cache size, cache line size and associativity
     const CACHE_ALLOC::STORE_ALLOCATION allocation = CACHE_ALLOC::STORE_ALLOCATE;
-
     const UINT32 max_sets = 5*KILO; // cacheSize / (lineSize * associativity);
-
     const UINT32 max_associativity = 512; // associativity;
-
     //typedef CACHE_DIRECT_MAPPED(max_sets, allocation) CACHE;
     //typedef CACHE_ROUND_ROBIN(max_sets, max_associativity, allocation) CACHE;
     typedef CACHE_LRU(max_sets , max_associativity, allocation) CACHE;
@@ -666,9 +658,9 @@ LOCALFUN VOID Fini(int code, VOID * v)
 
 BOOL ReadCache(ADDRINT addr, UINT8 size, ADDRINT &data)
 {
-    cout<<"Hi I'm read cache!"<<endl;
+    // cout<<"Hi I'm read cache!"<<endl;
     BOOL result = pdl1->ReadL1Cache(addr, size, data);
-    cout<<"Is reading from pdl1? "<<result<<endl;
+    // cout<<"Is reading from pdl1? "<<result<<endl;
     if(! result)
     {
         result = dl2->ReadFromCache(addr, data, size);
@@ -760,7 +752,6 @@ VOID FlushCareData()
         }
         for(UINT64 it = 0; it<size_base; it++)
         {
-
           temp_addr = addr_base + it*step;
           bool hit = memory.ReadMemory(temp_addr, step, temp_value);
           //bool hit = ReadCache(temp_addr, step, temp_value);
@@ -779,7 +770,6 @@ VOID FlushCareData()
               out<<*v2<<endl;
           }
         }
-
     }
     for(UINT16 i = 0; i<crucialdata.size(); i++)
     {
@@ -816,12 +806,9 @@ VOID FlushCareData()
                 out<<*v2<<endl;
                 //fprintf(memout,"%20.12e\n",*v2);
             }
-
-
         }
     }
     out.close();
-
     //PIN_ExitThread(0);
   */
 }
@@ -876,16 +863,13 @@ LOCALFUN VOID MemRefMulti(THREADID threadid, CACHE_BASE::ACCESS_TYPE accessType,
   /*
     ADDRINT nothit[BLOCK_SIZE]={0};
     UINT8 sizeincacheline[BLOCK_SIZE]={0};
-
     for(UINT8 index=0; index < BLOCK_SIZE; index ++)
     {
         nothit[index] = 0;
         sizeincacheline[index] = 0;
     }
-
     // first level D-cache: potentially multiple cache-line access
     const BOOL dl1Hit = dl1[pindex]->Access(addr, size, accessType, nothit, sizeincacheline);
-
     UINT8 value[BLOCK_SIZE]={0};
     UINT8 flush_value[BLOCK_SIZE] = {0};
     CACHE_DIRTY isdirty;
@@ -899,13 +883,10 @@ LOCALFUN VOID MemRefMulti(THREADID threadid, CACHE_BASE::ACCESS_TYPE accessType,
           UINT32 temp_size = sizeincacheline[i];
           ADDRINT miss_addr = nothit[i];
           ADDRINT replace_addr, replace_addr_l2, replace_addr_l3;
-
           const BOOL dl2Hit = dl2[pindex]->AccessSingleLine(miss_addr,temp_size,accessType, value, isdirty);
-
           if(!dl2Hit)
           {
               const BOOL dl3Hit = dl3->AccessSingleLine(miss_addr,temp_size, accessType, value, isdirty);
-
               if(!dl3Hit)
               {
                 if(accessType == CACHE_BASE::ACCESS_TYPE_STORE)
@@ -914,7 +895,6 @@ LOCALFUN VOID MemRefMulti(THREADID threadid, CACHE_BASE::ACCESS_TYPE accessType,
                     PIN_SafeCopy(v,(void*)addr,temp_size);
                     memory.WriteMemory(miss_addr,temp_size,v);
                 }
-
                 if(!memory.ReadAsBlock(miss_addr,value) && accessType == CACHE_BASE::ACCESS_TYPE_STORE)
                 {
                     cout<<"Do NOT read from mem. "<<endl;
@@ -949,9 +929,7 @@ LOCALFUN VOID MemRefMulti(THREADID threadid, CACHE_BASE::ACCESS_TYPE accessType,
             memory.ReadAsBlock(replace_addr,flush_value);
             dl3->FLushFromLastLevel(replace_addr,replace_addr_l3,flush_value);
           }
-
         }
-
     }
 */
     // second level unified Cache
@@ -1086,20 +1064,18 @@ VOID AfterCrush()
     for (UINT16 i=0; i<KILO; i++){
       for (UINT16 j=0; j<8; j++){
         for (UINT16 a=0; a<64; a++){
-          if (pdl1->dl1[0]->_sets[i]._dirty[j]._dirty){
-
+         // if (pdl1->dl1[k]->_sets[i]._dirty){
         
         dl2->_sets[i]._data[j]._data[a] = 20;
-          // dl2->_sets[i]._valid[j] = CACHE_VALID(0);
-          // dl2->_sets[i]._dirty[j] = CACHE_DIRTY(0);
-          // dl2->_sets[i]._tags[j] = CACHE_TAG(0);
+        dl2->_sets[i]._valid[j] = CACHE_VALID(0);
+        dl2->_sets[i]._dirty[j] = CACHE_DIRTY(0);
+        dl2->_sets[i]._tags[j] = CACHE_TAG(0);
         // dl2->_sets[i]._data[j] = CACHE_DATA();
         fprintf(allcacheout2, "%x %d %x %d\n", dl2->_sets[i]._tags[j]._tag, dl2->_sets[i]._data[j].GetData(a), dl2->_sets[i]._data[j].Get(a), dl2->_sets[i]._valid[j]._valid);
         pdl1->dl1[0]->_sets[i]._data[j]._data[a] = 20;
-        
         pdl1->dl1[0]->_sets[i]._valid[j] = CACHE_VALID(0);
-          // pdl1->dl1[0]->_sets[i]._dirty[j] = CACHE_DIRTY(0);
-          // pdl1->dl1[0]->_sets[i]._tags[j] = CACHE_TAG(0);
+        pdl1->dl1[0]->_sets[i]._dirty[j] = CACHE_DIRTY(0);
+        pdl1->dl1[0]->_sets[i]._tags[j] = CACHE_TAG(0);
         // pdl1->dl1[0]->_sets[i]._data[j] = CACHE_DATA();
         pdl1->EraseMAP();
         fprintf(allcacheout1, "%x %d %x %d\n", pdl1->dl1[0]->_sets[i]._tags[j]._tag, pdl1->dl1[0]->_sets[i]._data[j].GetData(a), pdl1->dl1[0]->_sets[i]._data[j].Get(a), pdl1->dl1[0]->_sets[i]._valid[j]._valid);
@@ -1210,10 +1186,8 @@ VOID AfterCrush()
               if(ReadCache(temp_addr,step,temp_cache_value))
               {
                  in_cache[i]+=step;
-
                  UINT8 *p_mem = (UINT8 *)&temp_value;
                  UINT8 *p_cache = (UINT8 *)&temp_cache_value;
-
                  pvalue = &temp_cache_value;
                  if(step == 4)
                  {
@@ -1527,18 +1501,18 @@ VOID SimpleCCTQuery(THREADID id, void* addr, const uint32_t slot) {
     uint64_t Addr = (uint64_t)addr;
     if(crush_flag && id == 0)
     {
-        PIN_LockClient();
+        // PIN_LockClient();
         icount++;
         if(icount == rand_crush)
         {
-          /*
+          
           if (PIN_StopApplicationThreads(id))
              {
                  printf("Threads stopped by application thread %u\n", id);
                  fflush(stdout);
-
                  UINT32 nThreads = PIN_GetStoppedThreadCount();
                  cout<<"The value of nThread is "<<dec<<nThreads<<endl;
+                 /*
                  ASSERTX(nThreads <= threadnum);
                  for (UINT32 i = 0; i < nThreads; i++)
                  {
@@ -1566,18 +1540,20 @@ VOID SimpleCCTQuery(THREADID id, void* addr, const uint32_t slot) {
                  PIN_AddThreadFiniFunction(ThreadFiniFunc, 0);
 
                  PIN_UnlockClient();
+                 PIN_LockClient();
                  AfterCrush();
+                 PIN_UnlockClient();
                  PrintResult();
                  // PIN_ExitThread(0);
-                 /*
+                 
                  PIN_ResumeApplicationThreads(id);
                  printf("Threads resumed by application thread %u\n", id);
                  fflush(stdout);
-             }*/
+             }
 
             // PIN_ExitApplication(0);
         }
-        PIN_UnlockClient();
+        // PIN_UnlockClient();
     }
 
 
@@ -1717,7 +1693,6 @@ VOID InstrumentInsCallback(INS ins, VOID* v, const uint32_t slot) {
 VOID Instruction(INS ins, void * v)
 {
     UINT32 memOperands = INS_MemoryOperandCount(ins);
-
     // Instrument each memory operand. If the operand is both read and written
     // it will be processed twice.
     // Iterating over memory operands ensures that instructions on IA-32 with
@@ -1726,7 +1701,6 @@ VOID Instruction(INS ins, void * v)
     {
         const UINT32 size = INS_MemoryOperandSize(ins, memOp);
         const BOOL   single = (size <= 4);
-
         if (INS_MemoryOperandIsWritten(ins, memOp))
         {
                 if( single )
@@ -1737,7 +1711,6 @@ VOID Instruction(INS ins, void * v)
                         IARG_MEMORYWRITE_EA,
                         IARG_MEMORYREAD_SIZE,
                         IARG_END);
-
                 }
                 else
                 {
@@ -1749,7 +1722,6 @@ VOID Instruction(INS ins, void * v)
                         IARG_END);
                 }
         }
-
         if (INS_MemoryOperandIsRead(ins, memOp))
         {
                 if( single )
@@ -1760,7 +1732,6 @@ VOID Instruction(INS ins, void * v)
                         IARG_MEMORYREAD_EA,
                         IARG_MEMORYREAD_SIZE,
                         IARG_END);
-
                 }
                 else
                 {
@@ -1971,10 +1942,8 @@ int main(int argc, char* argv[]) {
     const UINT32 sizel3 = KnobCacheL3Size.Value() * MEGA;
     const UINT32 linesizel3 = KnobCacheL3LineSize.Value();
     const UINT32 associativityl3 = KnobCacheL3Associativity.Value();
-
     ASSERTX(  associativityl3 <= DL3::max_associativity );
     ASSERTX( sizel3 /(associativityl3*linesizel3 )<= DL3::max_sets );
-
     // create the l3 cache object
     dl3 = new DL3::CACHE("L3 Data Cache", sizel3, linesizel3, associativityl3);
     */
