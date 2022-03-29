@@ -653,8 +653,9 @@ LOCALFUN VOID Fini(int code, VOID * v)
 
 BOOL ReadCache(ADDRINT addr, UINT8 size, ADDRINT &data)
 {
-    //cout<<"Hi I'm read cache!"<<endl;
+    cout<<"Hi I'm read cache!"<<endl;
     BOOL result = pdl1->ReadL1Cache(addr, size, data);
+    cout<<"Is reading from pdl1? "<<result<<endl;
     if(! result)
     {
         result = dl2->ReadFromCache(addr, data, size);
@@ -1025,29 +1026,34 @@ VOID AfterCrush()
     FILE *memout;
     FILE *cacheout;
     FILE *consistentout;
-    FILE *allcacheout;
+    FILE *allcacheout1;
+    FILE *allcacheout2;
     char memname[MAX_FILE_PATH] = "crush_mem.out.";
     char cachename[MAX_FILE_PATH] = "crush_cache.out.";
     char consistentname[MAX_FILE_PATH] = "consistent_variable.out.";
-    char crush_total_cache[MAX_FILE_PATH]="crush_total_cache.out.";
+    char crush_total_cache1[MAX_FILE_PATH]="crush_total_cache1.out.";
+    char crush_total_cache2[MAX_FILE_PATH]="crush_total_cache2.out.";
     gethostname(memname + strlen(memname), MAX_FILE_PATH - strlen(memname));
     gethostname(cachename + strlen(cachename), MAX_FILE_PATH - strlen(cachename));
     gethostname(consistentname + strlen(consistentname), MAX_FILE_PATH - strlen(consistentname));
-    gethostname(crush_total_cache + strlen(crush_total_cache), MAX_FILE_PATH - strlen(crush_total_cache));
+    gethostname(crush_total_cache1 + strlen(crush_total_cache1), MAX_FILE_PATH - strlen(crush_total_cache1));
+    gethostname(crush_total_cache2 + strlen(crush_total_cache2), MAX_FILE_PATH - strlen(crush_total_cache2));
     pid_t pid = getpid();
     sprintf(memname + strlen(memname), "%d", pid);
     sprintf(cachename + strlen(cachename), "%d", pid);
     sprintf(consistentname + strlen(consistentname), "%d", pid);
-    sprintf(crush_total_cache + strlen(crush_total_cache), "%d", pid);
+    sprintf(crush_total_cache1 + strlen(crush_total_cache1), "%d", pid);
+    sprintf(crush_total_cache2 + strlen(crush_total_cache2), "%d", pid);
     cerr << "\n Creating log file at:" << memname << "\n";
     cerr << "\n Creating log file at:" << cachename << "\n";
     cerr << "\n Creating log file at:" << consistentname << "\n";
-     cerr << "\n Creating log file at:" << crush_total_cache << "\n";
-
+    cerr << "\n Creating log file at:" << crush_total_cache1 << "\n";
+    cerr << "\n Creating log file at:" << crush_total_cache2 << "\n";
     memout = fopen(memname, "w");
     cacheout = fopen(cachename, "w");
     consistentout = fopen(consistentname,"w");
-    allcacheout = fopen(crush_total_cache,"w");
+    allcacheout1 = fopen(crush_total_cache1,"w");
+    allcacheout2 = fopen(crush_total_cache2,"w");
     ADDRINT temp_mem_value;
     ADDRINT temp_cache_value;
     ADDRINT temp_value;
@@ -1063,14 +1069,25 @@ VOID AfterCrush()
     ADDRINT *pvalue;
     UINT64 all_data = 0;
     
-    for (UINT16 k=0; k<pdl1->_num; k++){
+
     for (UINT16 i=0; i<KILO; i++){
-      for (UINT16 j=0; j<256; j++){
-        for (UINT16 a=0; a<pdl1->dl1[k]->_sets[i]._data[j]._lineSize; a++){
+      for (UINT16 j=0; j<8; j++){
+        for (UINT16 a=0; a<64; a++){
          // if (pdl1->dl1[k]->_sets[i]._dirty){
         
-        
-        fprintf(allcacheout, "%x %d\n", pdl1->dl1[k]->_sets[i]._tags[j]._tag, pdl1->dl1[k]->_sets[i]._data[j].GetData(a));
+        // dl2->_sets[i]._data[j]._data[a] = 0;
+          // dl2->_sets[i]._valid[j] = CACHE_VALID(0);
+          // dl2->_sets[i]._dirty[j] = CACHE_DIRTY(0);
+          // dl2->_sets[i]._tags[j] = CACHE_TAG(0);
+        dl2->_sets[i]._data[j] = CACHE_DATA();
+        fprintf(allcacheout2, "%x %d %x %d\n", dl2->_sets[i]._tags[j]._tag, dl2->_sets[i]._data[j].GetData(a), dl2->_sets[i]._data[j].Get(a), dl2->_sets[i]._valid[j]._valid);
+        // pdl1->dl1[0]->_sets[i]._data[j]._data[a] = 0;
+          // pdl1->dl1[0]->_sets[i]._valid[j] = CACHE_VALID(0);
+          // pdl1->dl1[0]->_sets[i]._dirty[j] = CACHE_DIRTY(0);
+          // pdl1->dl1[0]->_sets[i]._tags[j] = CACHE_TAG(0);
+        pdl1->dl1[0]->_sets[i]._data[j] = CACHE_DATA();
+        fprintf(allcacheout1, "%x %d %x %d\n", pdl1->dl1[0]->_sets[i]._tags[j]._tag, pdl1->dl1[0]->_sets[i]._data[j].GetData(a), pdl1->dl1[0]->_sets[i]._data[j].Get(a), pdl1->dl1[0]->_sets[i]._valid[j]._valid);
+
        // }
         //<<8+j)<<6+a
         }
@@ -1078,7 +1095,7 @@ VOID AfterCrush()
 
       }
     }
-    }
+
 
     //seperate consistent data
     for(UINT16 i = 0; i<consistent_variable.size(); i++)
@@ -1162,8 +1179,8 @@ VOID AfterCrush()
         else if(strcmp(type_base,INT) == 0){
             step = 4;
         }
-	else if (strcmp(type_base, "uint64_t") == 0) {
-	    step = 8;
+	      else if (strcmp(type_base, "uint64_t") == 0) {
+	          step = 8;
         }
         else if (strcmp(type_base, "uint8_t") == 0) {
             step = 1;
@@ -1366,6 +1383,7 @@ VOID AfterCrush()
 
 
     //for all data
+    
     all_data = memory.GetMemorySize() * 64;
     cout<<"The num of all data in application is "<<dec<<all_data<<" bytes."<<endl;
     UINT64 dirty_in_cache = CountInconsistency();
@@ -1376,7 +1394,7 @@ VOID AfterCrush()
     fprintf(gInfoFile,"\nThe num of all data in application is %lu, which is %lu K, %lu M.\n",all_data, all_data/KILO, all_data/MEGA);
     fprintf(gInfoFile,"The num of dirty data in cache is %lu\n",dirty_in_cache);
     fprintf(gInfoFile,"The inconsistency rate for all data is %lf.",rate);
-
+    
 
     fclose(memout);
     fclose(cacheout);
@@ -1541,7 +1559,7 @@ VOID SimpleCCTQuery(THREADID id, void* addr, const uint32_t slot) {
                  fflush(stdout);
              }*/
 
-            PIN_ExitApplication(0);
+            // PIN_ExitApplication(0);
         }
         PIN_UnlockClient();
     }

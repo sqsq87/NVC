@@ -1,6 +1,8 @@
 {
     "files.associations": {
+        "*.html": "ssm-json",
         "*.ph": "cpp",
-        "*.tlh": "cpp"
+        "*.tlh": "cpp",
+        "iostream": "cpp"
     }
 }

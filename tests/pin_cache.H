@@ -148,7 +148,7 @@ class CACHE_DATA
    */
    class CACHE_DIRTY
    {
-     private:
+     public:
        UINT8 _dirty;
 
      public:
@@ -170,7 +170,7 @@ class CACHE_DATA
     */
     class CACHE_VALID
     {
-      private:
+      public:
         UINT8 _valid;
 
       public:
