@@ -239,7 +239,19 @@ class PRIVATE_CACHE
     void Flush();
     void ResetStats();
     */
+   BOOL EraseMAP();
 };
+
+BOOL PRIVATE_CACHE::EraseMAP(){
+  //first 指向第一个键值对
+    CC_MAP::iterator first = dl1_map.begin();
+    //last 指向最后一个键值对
+    CC_MAP::iterator last = dl1_map.end();
+    //删除[fist,last)范围内的键值对
+    auto ret = dl1_map.erase(first, last);
+}
+
+
 
 UINT8 PRIVATE_CACHE::CountCD(ADDRINT addr){
   UINT8 dis = 0;
@@ -258,6 +270,7 @@ VOID PRIVATE_CACHE::CountDirtyCacheLine(){
   for(UINT8 i=0; i<_num; i++)
      dl1[i]->CountDirtyCacheLine();
 }
+
 
 BOOL PRIVATE_CACHE::ReadL1Cache(ADDRINT addr, UINT8 size, ADDRINT &data){
   /*
@@ -388,7 +401,7 @@ void PRIVATE_CACHE::Access(THREADID threadid, ADDRINT addr, UINT32 size, CACHE_B
 
       ASSERTX(it != dl1_map.end());
 
-
+      
       if (it->second[pindex] == INVALID) {
         //ASSERTX(!dl1[pindex]->AccessSingleLine(addr,step,accessType,cache_line));
         //For invalid state
@@ -1073,19 +1086,22 @@ VOID AfterCrush()
     for (UINT16 i=0; i<KILO; i++){
       for (UINT16 j=0; j<8; j++){
         for (UINT16 a=0; a<64; a++){
-         // if (pdl1->dl1[k]->_sets[i]._dirty){
+          if (pdl1->dl1[0]->_sets[i]._dirty[j]._dirty){
+
         
-        // dl2->_sets[i]._data[j]._data[a] = 0;
+        dl2->_sets[i]._data[j]._data[a] = 20;
           // dl2->_sets[i]._valid[j] = CACHE_VALID(0);
           // dl2->_sets[i]._dirty[j] = CACHE_DIRTY(0);
           // dl2->_sets[i]._tags[j] = CACHE_TAG(0);
-        dl2->_sets[i]._data[j] = CACHE_DATA();
+        // dl2->_sets[i]._data[j] = CACHE_DATA();
         fprintf(allcacheout2, "%x %d %x %d\n", dl2->_sets[i]._tags[j]._tag, dl2->_sets[i]._data[j].GetData(a), dl2->_sets[i]._data[j].Get(a), dl2->_sets[i]._valid[j]._valid);
-        // pdl1->dl1[0]->_sets[i]._data[j]._data[a] = 0;
-          // pdl1->dl1[0]->_sets[i]._valid[j] = CACHE_VALID(0);
+        pdl1->dl1[0]->_sets[i]._data[j]._data[a] = 20;
+        
+        pdl1->dl1[0]->_sets[i]._valid[j] = CACHE_VALID(0);
           // pdl1->dl1[0]->_sets[i]._dirty[j] = CACHE_DIRTY(0);
           // pdl1->dl1[0]->_sets[i]._tags[j] = CACHE_TAG(0);
-        pdl1->dl1[0]->_sets[i]._data[j] = CACHE_DATA();
+        // pdl1->dl1[0]->_sets[i]._data[j] = CACHE_DATA();
+        pdl1->EraseMAP();
         fprintf(allcacheout1, "%x %d %x %d\n", pdl1->dl1[0]->_sets[i]._tags[j]._tag, pdl1->dl1[0]->_sets[i]._data[j].GetData(a), pdl1->dl1[0]->_sets[i]._data[j].Get(a), pdl1->dl1[0]->_sets[i]._valid[j]._valid);
 
        // }
