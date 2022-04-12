@@ -18,6 +18,8 @@
 #include "pin.H"
 #include "cctlib.H"
 #include "random.H"
+#include <algorithm>
+#include <exception>
 typedef UINT64 CACHE_STATS; // type of cache hit/miss counters
 
 #include "private_cache.H"
@@ -231,6 +233,7 @@ class PRIVATE_CACHE
     void CountDirtyCacheLine();
     BOOL ReadL1Cache(ADDRINT addr, UINT8 size, ADDRINT &data);
     UINT8 CountCD(ADDRINT addr);
+    VOID EraseMAP();
     /*
     bool AccessSingleLine(ADDRINT addr,UINT32 size, ACCESS_TYPE accessType,UINT8 (&value)[BLOCK_SIZE], CACHE_DIRTY &isdirty);
     bool ReadFromCache(ADDRINT addr, ADDRINT &data, UINT8 size);
@@ -240,6 +243,15 @@ class PRIVATE_CACHE
     void ResetStats();
     */
 };
+
+VOID PRIVATE_CACHE::EraseMAP(){
+    //first 指向第一个键值对
+    CC_MAP::iterator first = dl1_map.begin();
+    //last 指向最后一个键值对
+    CC_MAP::iterator last = dl1_map.end();
+    //删除[fist,last)范围内的键值对
+    auto ret = dl1_map.erase(first, last);
+}
 
 UINT8 PRIVATE_CACHE::CountCD(ADDRINT addr){
   UINT8 dis = 0;
@@ -1042,7 +1054,7 @@ VOID AfterCrush()
     cerr << "\n Creating log file at:" << memname << "\n";
     cerr << "\n Creating log file at:" << cachename << "\n";
     cerr << "\n Creating log file at:" << consistentname << "\n";
-     cerr << "\n Creating log file at:" << crush_total_cache << "\n";
+    cerr << "\n Creating log file at:" << crush_total_cache << "\n";
 
     memout = fopen(memname, "w");
     cacheout = fopen(cachename, "w");
@@ -1062,22 +1074,125 @@ VOID AfterCrush()
     UINT64 critical_data_count[128] = {0};
     ADDRINT *pvalue;
     UINT64 all_data = 0;
+
+    // const UINT32 sizel2 = KnobCacheL2Size.Value() * MEGA;
+    // const UINT32 linesizel2 = KnobCacheL2LineSize.Value();
+    // const UINT32 associativityl2 = KnobCacheL2Associativity.Value();
+    // std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+    // std::cout << sizel2 << " " << linesizel2 << " " << associativityl2 << std::endl;
+    // delete dl2;
+    // dl2 = new DL2::CACHE("L2 Data Cache", sizel2, linesizel2, associativityl2);
+    // // dl2->_sets[i]._data[j]._data[a] = 20;
+    // // dl2->_sets[i]._valid[j] = CACHE_VALID(0);
+    // // dl2->_sets[i]._dirty[j] = CACHE_DIRTY(0);
+    // // dl2->_sets[i]._tags[j] = CACHE_TAG(0);
+
+    // const UINT32 size = KnobCacheL1Size.Value() * KILO;
+    // const UINT32 linesize = KnobCacheL1LineSize.Value();
+    // const UINT32 associativity = KnobCacheL1Associativity.Value();
+    // pdl1 = new PRIVATE_CACHE(pcachenum, size, linesize, associativity);
     
-    for (UINT16 k=0; k<pdl1->_num; k++){
-    for (UINT16 i=0; i<KILO; i++){
-      for (UINT16 j=0; j<256; j++){
-        for (UINT16 a=0; a<pdl1->dl1[k]->_sets[i]._data[j]._lineSize; a++){
+    // for (UINT16 i=0; i<pdl1->dl1[0]->NumSets(); i++){ //512
+    //   for (UINT16 j=0; j<pdl1->dl1[0]->_associativity; j++){ //8
+    //  //  memory.ReadMemory((pdl1->dl1[0]->_sets[i]._tags[j]._tag<<pdl1->dl1[0]->_sets[i]._lineShift), 64, one_block_memory_data);
+    //     for (UINT16 a=0; a<pdl1->dl1[0]->_lineSize; a++){//64
+          
+        
+          // pdl1->dl1[0]->_sets[i]._data[j]._data[a] = 20;
+          // pdl1->dl1[0]->_sets[i]._valid[j] = CACHE_VALID(0);
+          // pdl1->dl1[0]->_sets[i]._dirty[j] = CACHE_DIRTY(0);
+          // pdl1->dl1[0]->_sets[i]._tags[j] = CACHE_TAG(0);
+          // pdl1->EraseMAP()
          // if (pdl1->dl1[k]->_sets[i]._dirty){
         
+        // dl2->_sets[i]._data[j]._data[a] = 0;
+          // dl2->_sets[i]._valid[j] = CACHE_VALID(0);
+          // dl2->_sets[i]._dirty[j] = CACHE_DIRTY(0);
+          // dl2->_sets[i]._tags[j] = CACHE_TAG(0);
         
-        fprintf(allcacheout, "%x %d\n", pdl1->dl1[k]->_sets[i]._tags[j]._tag, pdl1->dl1[k]->_sets[i]._data[j].GetData(a));
+        // pdl1->dl1[0]->_sets[i]._data[j]._data[a] = 0;
+          // pdl1->dl1[0]->_sets[i]._valid[j] = CACHE_VALID(0);
+          // pdl1->dl1[0]->_sets[i]._dirty[j] = CACHE_DIRTY(0);
+          // pdl1->dl1[0]->_sets[i]._tags[j] = CACHE_TAG(0);
+       // pdl1->dl1[0]->_sets[i]._data[j] = CACHE_DATA();
+        //pdl1->dl1[0]->SetInvalid(pdl1->dl1[0]->_sets[i]._tags[j]);
+        // *dl2->_sets[i]._data[j].Get(a) = 10;
+        // *pdl1->dl1[0]->_sets[i]._data[j].Get(a) = 10;
+        // fprintf(allcacheout1, "%x %d %x %d\n", (pdl1->dl1[0]->_sets[i]._tags[j]._tag<<pdl1->dl1[0]->_sets[i]._lineShift)+a, pdl1->dl1[0]->_sets[i]._data[j].GetData(a), pdl1->dl1[0]->_sets[i]._data[j].Get(a), pdl1->dl1[0]->_sets[i]._valid[j]._valid);
+      //  fprintf(allcacheout1,"%x %d", pdl1->dl1[0]->_sets[i]._tags[j]._tag<<pdl1->dl1[0]->_sets[i]._lineShift+a, one_block_memory_data[a] );
+        
+
        // }
         //<<8+j)<<6+a
-        }
+         // }
 //TraceFile <<hex<< addr << " " <<dec<< size <<" "<<type<< endl;
 
-      }
+       // }
+    // }
+
+
+
+    std::vector<ADDRINT> sorted_index;
+    for (auto it = memory.main_memory.begin(); it != memory.main_memory.end(); it++) {
+      sorted_index.emplace_back(it->first);
     }
+
+    sort(sorted_index.begin(), sorted_index.end(), [&](ADDRINT i, ADDRINT j) {
+      return i < j;
+    });
+
+    std::cout << sorted_index.size() << std::endl;
+    for (size_t i = 0; i < sorted_index.size(); i++) {
+      // for (int j = 0; j < 64; j++) {
+        // boost::array<UINT8, BLOCK_SIZE> temp = it->second;
+        // ADDRINT
+        // UINT8 temp[BLOCK_SIZE];
+        // int j = 0;
+
+        // bool is_empty = false;
+
+        // for (const UINT8& data : memory.main_memory[sorted_index[i]]) {
+        //   if ((unsigned int)(data) == 0) {
+        //     is_empty = true;
+        //   }
+        // }
+
+        // if (is_empty) {
+        //   continue;
+        // }
+        // if (memory.main_memory[sorted_index[i]] 
+        int offset = 0;
+        for (const UINT8& data : memory.main_memory[sorted_index[i]]) {
+          UINT8 temp = data;
+          if (data != 0) {
+            int copy_size = PIN_SafeCopy((void*)&temp, (void*)&temp, 1);
+            if (copy_size > 0) {
+              PIN_SafeCopy((void*)(sorted_index[i]+ offset), (void*)&temp, 1);
+              break;
+            }
+            
+            // memcpy((void*)(sorted_index[i]+ offset), (void*)&temp, 1);
+          }
+          offset++;
+          // temp[j++] = data;
+          // std::cout << 
+          // std::cout << (unsigned int)data << std::endl;
+        }
+        break;
+        std::cout << "end!" << std::endl;
+        std::cout << "addr is " << sorted_index[i] << std::endl;
+        // std::cout << sorted_index.size() << std::endl;
+        // std::cout << "end!" << std::endl;
+        // std::cout << memory.main_memory[sorted_index[i]] << std::endl;
+        // copy(it->second.begin(), it->second.end(), (void*)it->first);
+        // try {
+        // memcpy((void*)sorted_index[i], (void*)temp, 64);
+        // } catch (std::exception& e) {
+        //   std::cout << "invalid addrint " << sorted_index[i] << std::endl;
+        // }
+        
+        // *((int*)(it->first+j)) = 0;
+      // }
     }
 
     //seperate consistent data
@@ -1540,13 +1655,13 @@ VOID SimpleCCTQuery(THREADID id, void* addr, const uint32_t slot) {
                  printf("Threads resumed by application thread %u\n", id);
                  fflush(stdout);
              }*/
-
-            PIN_ExitApplication(0);
+            std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+            // PIN_ExitApplication(0);
         }
         PIN_UnlockClient();
     }
 
-
+    
     if(icount <= INS_MAX)
     {
       void **metric = GetIPNodeMetric(id, 0);
@@ -1569,7 +1684,7 @@ VOID SimpleCCTQuery(THREADID id, void* addr, const uint32_t slot) {
           //(static_cast<struct node_metric_t*>(*metric))->dependentNum+=refSize;
       }
     }
-
+// std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
 
 }
 

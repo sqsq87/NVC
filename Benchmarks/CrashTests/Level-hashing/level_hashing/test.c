@@ -17,32 +17,32 @@ int main(int argc, char* argv[])
     // save buckets
     
 
-    for (i = 0; i < level->addr_capacity; i++) {
-        crucial_data(&(level->buckets[0] + i)->token, "uint8_t", ASSOC_NUM);
-        for (j = 0; j < ASSOC_NUM; j++) {
-            crucial_data(&(level->buckets[0] + i)->slot[j].key, "uint8_t", KEY_LEN);
-            crucial_data(&(level->buckets[0] + i)->slot[j].value, "uint8_t", VALUE_LEN);
-        }
-    }
+    // for (i = 0; i < level->addr_capacity; i++) {
+    //     crucial_data(&(level->buckets[0] + i)->token, "uint8_t", ASSOC_NUM);
+    //     for (j = 0; j < ASSOC_NUM; j++) {
+    //         crucial_data(&(level->buckets[0] + i)->slot[j].key, "uint8_t", KEY_LEN);
+    //         crucial_data(&(level->buckets[0] + i)->slot[j].value, "uint8_t", VALUE_LEN);
+    //     }
+    // }
   
-    for (i = 0; i < level->total_capacity - level->addr_capacity; i++) {
-        crucial_data(&(level->buckets[1] + i)->token, "uint8_t", ASSOC_NUM);
-        for (j = 0; j < ASSOC_NUM; j++) {
-            crucial_data(&(level->buckets[1] + i)->slot[j].key, "uint8_t", KEY_LEN);
-            crucial_data(&(level->buckets[1] + i)->slot[j].value, "uint8_t", VALUE_LEN);
-        }
-    }
+    // for (i = 0; i < level->total_capacity - level->addr_capacity; i++) {
+    //     crucial_data(&(level->buckets[1] + i)->token, "uint8_t", ASSOC_NUM);
+    //     for (j = 0; j < ASSOC_NUM; j++) {
+    //         crucial_data(&(level->buckets[1] + i)->slot[j].key, "uint8_t", KEY_LEN);
+    //         crucial_data(&(level->buckets[1] + i)->slot[j].value, "uint8_t", VALUE_LEN);
+    //     }
+    // }
     
 
-    crucial_data(&level->level_item_num[0], "uint64_t", 1);
-    crucial_data(&level->level_item_num[1], "uint64_t", 1);
-    crucial_data(&level->addr_capacity, "uint64_t", 1);
-    crucial_data(&level->total_capacity, "uint64_t", 1);
-    crucial_data(&level->level_size, "uint64_t", 1);
-    crucial_data(&level->level_expand_time, "uint8_t", 1);
-    crucial_data(&level->resize_state, "uint8_t", 1);
-    crucial_data(&level->f_seed, "uint64_t", 1);
-    crucial_data(&level->s_seed, "uint64_t", 1);
+    // crucial_data(&level->level_item_num[0], "uint64_t", 1);
+    // crucial_data(&level->level_item_num[1], "uint64_t", 1);
+    // crucial_data(&level->addr_capacity, "uint64_t", 1);
+    // crucial_data(&level->total_capacity, "uint64_t", 1);
+    // crucial_data(&level->level_size, "uint64_t", 1);
+    // crucial_data(&level->level_expand_time, "uint8_t", 1);
+    // crucial_data(&level->resize_state, "uint8_t", 1);
+    // crucial_data(&level->f_seed, "uint64_t", 1);
+    // crucial_data(&level->s_seed, "uint64_t", 1);
     consistent_data(&it, "uint64_t", 1);
 
     flush_whole_cache();
@@ -75,8 +75,16 @@ int main(int argc, char* argv[])
     {
         snprintf(key, KEY_LEN, "%ld", i);
         uint8_t* get_value = level_static_query(level, key);
-        if(get_value == NULL)
+        if (get_value == NULL) {
             printf("Search the key %s: ERROR! \n", key);
+            continue;
+        }
+        if(get_value != key) {
+            printf("Search the key %s: ERROR! \n", key);
+            printf("Value get: %s\n", get_value);
+            
+        }
+            
    }
 
     printf("The dynamic search test begins ...\n");
@@ -84,8 +92,14 @@ int main(int argc, char* argv[])
     {
         snprintf(key, KEY_LEN, "%ld", i);
         uint8_t* get_value = level_dynamic_query(level, key);
-        if(get_value == NULL)
+        if (get_value == NULL) {
             printf("Search the key %s: ERROR! \n", key);
+            continue;
+        }
+        if(get_value != key) {
+            printf("Search the key %s: ERROR! \n", key);
+            printf("Value get: %s\n", get_value);
+        }
    }
 
     printf("The update test begins ...\n");

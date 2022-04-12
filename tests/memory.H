@@ -26,7 +26,7 @@ using namespace std;
 
  class MEMORY
  {
-   private:
+   public:
        MEM main_memory;             //main memory
        ADDRINT _capacity;           // main memory capacity
        ADDRINT _lineShift;          // for get block start address

@@ -134,7 +134,7 @@ class CACHE_DATA
   */
 /*  class CACHE_FLAG
   {
-    private:
+    public:
       UINT8 _flag;
 
     public:
@@ -148,7 +148,7 @@ class CACHE_DATA
    */
    class CACHE_DIRTY
    {
-     private:
+     public:
        UINT8 _dirty;
 
      public:
@@ -170,7 +170,7 @@ class CACHE_DATA
     */
     class CACHE_VALID
     {
-      private:
+      public:
         UINT8 _valid;
 
       public:
@@ -184,7 +184,7 @@ class CACHE_DATA
     */
     class CACHE_MAP
     {
-        private:
+        public:
             typedef std::bitset<BLOCK_SIZE> REFERENCE;
             typedef boost::array<REFERENCE, BLOCK_SIZE> MAP;
             MAP map;
@@ -249,7 +249,7 @@ class CACHE_DATA
      *   similar as LIP, except that BIP infrequently (with a low probability) places the incoming line in the MRU position
      */
      class BIP_REPLACE{
-        private:
+        public:
             std::deque<UINT32> d;
             UINT32 _size;
             double t;
@@ -340,7 +340,7 @@ namespace CACHE_SET
  */
 class DIRECT_MAPPED
 {
-  private:
+  public:
     CACHE_TAG _tag;
 
   public:
@@ -360,7 +360,7 @@ class DIRECT_MAPPED
 template <UINT32 MAX_ASSOCIATIVITY = 4>
 class ROUND_ROBIN
 {
-  private:
+  public:
     CACHE_TAG _tags[MAX_ASSOCIATIVITY];
     CACHE_DATA _data[MAX_ASSOCIATIVITY];
     CACHE_DIRTY _dirty[MAX_ASSOCIATIVITY];
@@ -1098,11 +1098,11 @@ class CACHE_BASE
         ACCESS_TYPE_NUM
     } ACCESS_TYPE;
 
-  protected:
+  public:
     static const UINT32 HIT_MISS_NUM = 2;
     CACHE_STATS _access[ACCESS_TYPE_NUM][HIT_MISS_NUM];
 
-  private:
+  public:
     // input params
     const std::string _name;
     const UINT32 _cacheSize;
@@ -1127,7 +1127,7 @@ class CACHE_BASE
         return sum;
     }
 
-  protected:
+  public:
     UINT32 NumSets() const { return _setIndexMask + 1; }
 
   public:
