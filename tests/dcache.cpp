@@ -107,6 +107,8 @@ struct sort_format_t {
   //uint64_t dependentNum;
 };
 
+UINT32 crush_count = 0;
+
 
 #define THREAD_MAX (1024)
 unordered_map<uint32_t, struct node_metric_t> hmap_vector[THREAD_MAX];
@@ -654,12 +656,16 @@ LOCALFUN VOID Fini(int code, VOID * v)
     TraceFile<<"The num of array we care is "<<crucialdata.size()<<endl;
 
     pdl1->Output();
-
+    
     std::cerr << *dl2;
     //std::cerr << *dl3;
     TraceFile.close();
     CMRFile.close();
     fclose(gInfoFile);
+
+
+    crush_count++;
+    // PIN_StartProgram();
 }
 
 
@@ -1168,7 +1174,7 @@ VOID AfterCrush()
             int copy_size = PIN_SafeCopy((void*)&temp, (void*)&temp, 1);
             if (copy_size > 0) {
               PIN_SafeCopy((void*)(sorted_index[i]+ offset), (void*)&temp, 1);
-              break;
+              // break;
             }
             
             // memcpy((void*)(sorted_index[i]+ offset), (void*)&temp, 1);
@@ -1178,7 +1184,7 @@ VOID AfterCrush()
           // std::cout << 
           // std::cout << (unsigned int)data << std::endl;
         }
-        break;
+        // break;
         std::cout << "end!" << std::endl;
         std::cout << "addr is " << sorted_index[i] << std::endl;
         // std::cout << sorted_index.size() << std::endl;
@@ -1719,6 +1725,7 @@ VOID handleMemoryWrite(THREADID threadid, ADDRINT write_address, UINT32 write_da
 }
 
 VOID InstrumentInsCallback(INS ins, VOID* v, const uint32_t slot) {
+  
 //VOID Instruction(INS ins, void * v){
     /*
     if (!INS_IsMemoryRead(ins) && !INS_IsMemoryWrite(ins)) return;
