@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.html": "ssm-json",
         "*.ph": "cpp",
         "*.tlh": "cpp",
         "optional": "cpp",
@@ -56,6 +57,9 @@
         "fstream": "cpp",
         "iomanip": "cpp",
         "string_view": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "*.plh": "cpp",
+        "random": "cpp",
+        "cinttypes": "cpp"
     }
 }

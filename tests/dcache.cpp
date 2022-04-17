@@ -128,6 +128,11 @@ struct timeval tv4;
 
 std::ofstream TraceFile;
 
+UINT32 memiter;
+
+KNOB<UINT32> KnobMemoryWrite(KNOB_MODE_WRITEONCE, "pintool",
+    "-m", "0", "safecopy memory value starting from m");
+
 KNOB<string> KnobOutputFile(KNOB_MODE_WRITEONCE, "pintool",
     "o", "malloctrace.out", "specify trace file name");
 
@@ -654,7 +659,6 @@ LOCALFUN VOID Fini(int code, VOID * v)
     TraceFile<<"Count "<<dec<<icount<<endl;
     TraceFile<<"The num of consistent variable is "<<consistent_variable.size()<<endl;
     TraceFile<<"The num of array we care is "<<crucialdata.size()<<endl;
-
     pdl1->Output();
     
     std::cerr << *dl2;
@@ -1034,6 +1038,8 @@ VOID PrintResult()
     CMRFile<<pid<<","<<crash_line<<",";
 }
 
+FILE * tracemem;
+
 VOID AfterCrush()
 {
     cout<< "I'm after crush!"<< endl;
@@ -1147,6 +1153,9 @@ VOID AfterCrush()
       return i < j;
     });
 
+    memiter = KnobMemoryWrite.Value();
+    std::cout << memiter << std::endl;
+
     std::cout << sorted_index.size() << std::endl;
     for (size_t i = 0; i < sorted_index.size(); i++) {
       // for (int j = 0; j < 64; j++) {
@@ -1174,6 +1183,8 @@ VOID AfterCrush()
             int copy_size = PIN_SafeCopy((void*)&temp, (void*)&temp, 1);
             if (copy_size > 0) {
               PIN_SafeCopy((void*)(sorted_index[i]+ offset), (void*)&temp, 1);
+              std::cout << "Copy address" << std::endl;
+              fprintf(tracemem, "Copy address %x\n", (void*)(sorted_index[i]+ offset));
               // break;
             }
             
@@ -1185,8 +1196,8 @@ VOID AfterCrush()
           // std::cout << (unsigned int)data << std::endl;
         }
         // break;
-        std::cout << "end!" << std::endl;
-        std::cout << "addr is " << sorted_index[i] << std::endl;
+        // std::cout << "end!" << std::endl;
+        // std::cout << "addr is " << sorted_index[i] << std::endl;
         // std::cout << sorted_index.size() << std::endl;
         // std::cout << "end!" << std::endl;
         // std::cout << memory.main_memory[sorted_index[i]] << std::endl;
@@ -1724,6 +1735,63 @@ VOID handleMemoryWrite(THREADID threadid, ADDRINT write_address, UINT32 write_da
     PIN_UnlockClient();
 }
 
+FILE * trace;
+
+VOID RecordMemRead(VOID * ip, VOID * addr){
+    // std::cout << ip << addr << std::endl;
+    fprintf(trace,"%p: R %p\n", ip, addr);
+    // fprintf(trace,"%p: R %p: Value %d\n", ip, addr, *((INT32*)addr));
+    // std::cout << *((INT32*)addr) << std::endl;
+}
+VOID RecordMemWrite(VOID * ip, VOID * addr){
+    // std::cout << ip << addr << std::endl;
+    fprintf(trace,"%p: W %p\n", ip, addr);
+    // fprintf(trace,"%p: W %p: Value %d\n", ip, addr, *((INT32*)addr));
+    // std::cout << *((INT32*)addr) << std::endl;
+} 
+
+VOID Instruction(INS ins, VOID *v){
+    
+    
+    // Instruments memory accesses using a predicated call, i.e.
+    // the instrumentation is called iff the instruction will actually be executed.
+    //
+    // On the IA-32 and Intel(R) 64 architectures conditional moves and REP
+    // prefixed instructions appear as predicated instructions in Pin.
+    UINT32 memOperands = INS_MemoryOperandCount(ins);
+
+    // Iterate over each memory operand of the instruction.
+    for (UINT32 memOp = 0; memOp < memOperands; memOp++)
+    {
+    
+    
+        if (INS_MemoryOperandIsRead(ins, memOp))
+        {
+    
+    
+            //只对 MemOp 做 instrument 并加入 analysis 函数 RecordMemWrite
+            INS_InsertPredicatedCall(
+                ins, IPOINT_BEFORE, (AFUNPTR)RecordMemRead,
+                IARG_INST_PTR,
+                IARG_MEMORYOP_EA, memOp,
+                IARG_END);
+        }
+        // Note that in some architectures a single memory operand can be
+        // both read and written (for instance incl (%eax) on IA-32)
+        // In that case we instrument it once for read and once for write.
+        if (INS_MemoryOperandIsWritten(ins, memOp))
+        {
+    
+    
+            INS_InsertPredicatedCall(
+                ins, IPOINT_BEFORE, (AFUNPTR)RecordMemWrite,
+                IARG_INST_PTR,
+                IARG_MEMORYOP_EA, memOp,
+                IARG_END);
+        }
+    }
+}
+
 VOID InstrumentInsCallback(INS ins, VOID* v, const uint32_t slot) {
   
 //VOID Instruction(INS ins, void * v){
@@ -1743,6 +1811,22 @@ VOID InstrumentInsCallback(INS ins, VOID* v, const uint32_t slot) {
     */
     //INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)docount,IARG_INST_PTR, IARG_END);
 
+
+    
+
+
+    // ADDRINT pc = INS_Address(ins);
+    // const char *filename;
+    // INT32 line;
+    // LEVEL_PINCLIENT::PIN_FindLineFileByAddress(pc, &line, &filename);
+    // string file(filename ? filename : "");
+    // std::cout << file << std::endl;
+    // std::cout << line << std::endl;
+
+
+    // printf("address is %lx\n", INS_Address(ins));
+
+    // std::cout << INS_Address(ins) << std::endl;
     INS_InsertPredicatedCall(ins, IPOINT_BEFORE, (AFUNPTR)SimpleCCTQuery, IARG_THREAD_ID, IARG_INST_PTR, IARG_UINT32, slot, IARG_END);
 
     if (INS_IsMemoryWrite(ins))
@@ -2002,6 +2086,10 @@ int main(int argc, char* argv[]) {
     // Init Client
     ClientInit(argc, argv);
     // Intialize CCTLib
+
+    tracemem = fopen("pinatrace_mem.out", "w");
+
+
     PinCCTLibInit(INTERESTING_INS_ALL, gTraceFile, InstrumentInsCallback, 0);
     TraceFile.open(KnobOutputFile.Value().c_str());
     //TraceFile << hex;
@@ -2010,9 +2098,12 @@ int main(int argc, char* argv[]) {
     threadnum = KnobThreadNum.Value();
     pcachenum = KnobPrivateCacheNum.Value();
     cout << "thread num is " << (unsigned int)threadnum << "!!!!!!!!!!!!!!!\n"; 
-
-
     IMG_AddInstrumentFunction(Image, 0);
+    cout << "write to trace!\n"; 
+    trace = fopen("pinatrace.out", "w");
+    
+
+    INS_AddInstrumentFunction(Instruction, 0);
 
     //function inside Instruction moved to CCTLib InstrumentInsCallback
     //INS_AddInstrumentFunction(Instruction, 0);

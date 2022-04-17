@@ -5,6 +5,7 @@
 
 void handler(int sig) {
     write(1, "success", strlen("success"));
+    FILE *IsSegFault;
     exit(0);
 }
 
