@@ -1791,7 +1791,7 @@ VOID Instruction(INS ins, VOID *v){
         }
     }
 }
-
+FILE * traceins;
 VOID InstrumentInsCallback(INS ins, VOID* v, const uint32_t slot) {
   
 //VOID Instruction(INS ins, void * v){
@@ -1814,14 +1814,32 @@ VOID InstrumentInsCallback(INS ins, VOID* v, const uint32_t slot) {
 
     
 
+    
+    ADDRINT pc = INS_Address(ins);
+    string filename1;
+    INT32 line=0;
+    INT32 column=0;
+    //INT32 column;
+   PIN_GetSourceLocation(pc, &column, &line, &filename1);
+    if(!filename1.empty())
+                 {
+         	        char *cstr = new char[filename1.length() + 1];
+              	    strcpy(cstr, filename1.c_str());
+                   fprintf(traceins,"\n\n happens in 0x%lx #%s : line %d column %d\n",pc,cstr,line, column);
+                  // crash_line = line;
+                   cout << "0x" << pc  << " #" << filename1 << ":" << line << column<< endl;
+                 }
 
-    // ADDRINT pc = INS_Address(ins);
-    // const char *filename;
-    // INT32 line;
-    // LEVEL_PINCLIENT::PIN_FindLineFileByAddress(pc, &line, &filename);
-    // string file(filename ? filename : "");
-    // std::cout << file << std::endl;
-    // std::cout << line << std::endl;
+    std::cout<< "filename" <<filename1;
+   // string file(filename ? filename : "");
+   //std::cout<< "filename:"<<filename<<std::endl;
+   //fprintf(traceins, "line %d\n",line);
+  //fprintf(traceins, "filename %s\n", filename);
+  //fprintf(traceins, "filename %s\n", filename);
+  
+    //std::cout << file << std::endl;
+    //std::cout << line << std::endl;
+    //std::cout << column <<std::endl;
 
 
     // printf("address is %lx\n", INS_Address(ins));
@@ -2088,7 +2106,7 @@ int main(int argc, char* argv[]) {
     // Intialize CCTLib
 
     tracemem = fopen("pinatrace_mem.out", "w");
-
+    traceins=fopen("pinatrace_ins.out", "w");
 
     PinCCTLibInit(INTERESTING_INS_ALL, gTraceFile, InstrumentInsCallback, 0);
     TraceFile.open(KnobOutputFile.Value().c_str());

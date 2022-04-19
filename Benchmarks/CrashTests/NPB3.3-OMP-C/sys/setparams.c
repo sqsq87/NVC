@@ -64,6 +64,7 @@ void write_sp_info(FILE *fp, char class);
 void write_bt_info(FILE *fp, char class);
 void write_lu_info(FILE *fp, char class);
 void write_mg_info(FILE *fp, char class);
+void write_lh_info(FILE *fp, char class);
 void write_cg_info(FILE *fp, char class);
 void write_ft_info(FILE *fp, char class);
 void write_ep_info(FILE *fp, char class);
@@ -80,7 +81,7 @@ void put_def_variable(FILE *fp, char *name, char *val);
 int ilog2(int i);
 double power(double base, int i);
 
-enum benchmark_types {SP, BT, LU, MG, FT, IS, EP, CG, UA, DC};
+enum benchmark_types {SP, BT, LU, MG, LH, FT, IS, EP, CG, UA, DC};
 
 int main(int argc, char *argv[])
 {
@@ -157,6 +158,7 @@ void get_info(char *argv[], int *typep, char *classp)
   else if (!strcmp(argv[1], "ft") || !strcmp(argv[1], "FT")) *typep = FT;
   else if (!strcmp(argv[1], "lu") || !strcmp(argv[1], "LU")) *typep = LU;
   else if (!strcmp(argv[1], "mg") || !strcmp(argv[1], "MG")) *typep = MG;
+  else if (!strcmp(argv[1], "lh") || !strcmp(argv[1], "LH")) *typep = LH;
   else if (!strcmp(argv[1], "is") || !strcmp(argv[1], "IS")) *typep = IS;
   else if (!strcmp(argv[1], "ep") || !strcmp(argv[1], "EP")) *typep = EP;
   else if (!strcmp(argv[1], "cg") || !strcmp(argv[1], "CG")) *typep = CG;
@@ -227,6 +229,7 @@ void read_info(int type, char *classp)
       case BT:
       case FT:
       case MG:
+      case LH:
       case LU:
       case EP:
       case CG:
@@ -283,6 +286,7 @@ void write_info(int type, char class)
       case BT:
       case FT:
       case MG:
+      case LH:
       case LU:
       case EP:
       case CG:
@@ -339,7 +343,10 @@ void write_info(int type, char class)
     break;	      
   case MG:	      
     write_mg_info(fp, class);
-    break;	      
+    break;	 
+  case LH:
+    write_lh_info(fp, class);
+    break;
   case IS:	      
     write_is_info(fp, class);  
     break;	      
@@ -536,7 +543,9 @@ void write_is_info(FILE *fp, char class)
 /* 
  * write_cg_info(): Write CG specific info to config file
  */
-
+void write_lh_info(FILE *fp, char class){
+  int i;
+}
 void write_cg_info(FILE *fp, char class) 
 {
   int na,nonzer,niter;
@@ -758,6 +767,7 @@ setparams: File %s doesn't exist. To build the NAS benchmarks\n\
       case SP:
       case BT:
       case MG:
+      case LH:
       case LU:
       case EP:
       case CG:
@@ -1017,6 +1027,7 @@ void write_convertdouble_info(int type, FILE *fp)
   case LU:
   case FT:
   case MG:
+  case LH:
   case EP:
   case CG:
   case UA:
