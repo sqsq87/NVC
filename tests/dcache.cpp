@@ -1183,7 +1183,7 @@ VOID AfterCrush()
             int copy_size = PIN_SafeCopy((void*)&temp, (void*)&temp, 1);
             if (copy_size > 0) {
               PIN_SafeCopy((void*)(sorted_index[i]+ offset), (void*)&temp, 1);
-              std::cout << "Copy address" << std::endl;
+             // std::cout << "Copy address" << std::endl;
               fprintf(tracemem, "Copy address %x\n", (void*)(sorted_index[i]+ offset));
               // break;
             }
@@ -1658,7 +1658,7 @@ VOID SimpleCCTQuery(THREADID id, void* addr, const uint32_t slot) {
               	    strcpy(cstr, filename.c_str());
                    fprintf(gInfoFile,"\n\n Crush happens in 0x%lx #%s : line %d\n",Addr,cstr,line);
                    crash_line = line;
-                   cout << "0x" << Addr  << " #" << filename << ":" << line << endl;
+                  cout << "0x" << Addr  << " #" << filename << ":" << line << endl;
                  }
                  //void **Metric = GetContextHandle(id, 0);
                  PIN_AddThreadFiniFunction(ThreadFiniFunc, 0);
@@ -1737,15 +1737,45 @@ VOID handleMemoryWrite(THREADID threadid, ADDRINT write_address, UINT32 write_da
 
 FILE * trace;
 
+FILE * traceins;
 VOID RecordMemRead(VOID * ip, VOID * addr){
     // std::cout << ip << addr << std::endl;
-    fprintf(trace,"%p: R %p\n", ip, addr);
+    string filename1;
+    INT32 line=0;
+    INT32 column=0;
+    //INT32 column;
+    PIN_LockClient();
+   PIN_GetSourceLocation((ADDRINT)ip, &column, &line, &filename1);
+    if(!filename1.empty())
+                 {
+         	        char *cstr = new char[filename1.length() + 1];
+              	    strcpy(cstr, filename1.c_str());
+                   fprintf(traceins,"\n\n happens in 0x%x #%s : line %d column %d\n",(ADDRINT)ip,cstr,line, column);
+                 }
+    fprintf(trace,"%x: R %x\n", ip, addr);
+    PIN_UnlockClient();
+    
+   
     // fprintf(trace,"%p: R %p: Value %d\n", ip, addr, *((INT32*)addr));
     // std::cout << *((INT32*)addr) << std::endl;
 }
 VOID RecordMemWrite(VOID * ip, VOID * addr){
     // std::cout << ip << addr << std::endl;
-    fprintf(trace,"%p: W %p\n", ip, addr);
+    string filename1;
+    INT32 line=0;
+    INT32 column=0;
+    //INT32 column;
+    PIN_LockClient();
+   PIN_GetSourceLocation((ADDRINT)ip, &column, &line, &filename1);
+    if(!filename1.empty())
+                 {
+         	        char *cstr = new char[filename1.length() + 1];
+              	    strcpy(cstr, filename1.c_str());
+                   fprintf(traceins,"\n\n happens in 0x%x #%s : line %d column %d\n",(ADDRINT)ip,cstr,line, column);
+                 }
+    
+    fprintf(trace,"%x: W %x\n", ip, addr);
+    PIN_UnlockClient();
     // fprintf(trace,"%p: W %p: Value %d\n", ip, addr, *((INT32*)addr));
     // std::cout << *((INT32*)addr) << std::endl;
 } 
@@ -1791,7 +1821,7 @@ VOID Instruction(INS ins, VOID *v){
         }
     }
 }
-FILE * traceins;
+
 VOID InstrumentInsCallback(INS ins, VOID* v, const uint32_t slot) {
   
 //VOID Instruction(INS ins, void * v){
@@ -1816,6 +1846,7 @@ VOID InstrumentInsCallback(INS ins, VOID* v, const uint32_t slot) {
 
     
     ADDRINT pc = INS_Address(ins);
+   // printf("%x\n",pc);
     string filename1;
     INT32 line=0;
     INT32 column=0;
@@ -1825,12 +1856,12 @@ VOID InstrumentInsCallback(INS ins, VOID* v, const uint32_t slot) {
                  {
          	        char *cstr = new char[filename1.length() + 1];
               	    strcpy(cstr, filename1.c_str());
-                   fprintf(traceins,"\n\n happens in 0x%lx #%s : line %d column %d\n",pc,cstr,line, column);
+                  // fprintf(traceins,"\n\n happens in 0x%x #%s : line %d column %d\n",pc,cstr,line, column);
                   // crash_line = line;
-                   cout << "0x" << pc  << " #" << filename1 << ":" << line << column<< endl;
+                 //  cout << "0x" << pc  << " #" << filename1 << ":" << line << column<< endl;
                  }
 
-    std::cout<< "filename" <<filename1;
+    //std::cout<< "filename" <<filename1;
    // string file(filename ? filename : "");
    //std::cout<< "filename:"<<filename<<std::endl;
    //fprintf(traceins, "line %d\n",line);
