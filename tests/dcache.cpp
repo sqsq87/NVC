@@ -1177,15 +1177,20 @@ VOID AfterCrush()
         // }
         // if (memory.main_memory[sorted_index[i]] 
         int offset = 0;
+        UINT8 index = 0;
         for (const UINT8& data : memory.main_memory[sorted_index[i]]) {
           UINT8 temp = data;
+          
           if (data != 0) {
             int copy_size = PIN_SafeCopy((void*)&temp, (void*)&temp, 1);
             if (copy_size > 0) {
               PIN_SafeCopy((void*)(sorted_index[i]+ offset), (void*)&temp, 1);
-             // std::cout << "Copy address" << std::endl;
+              std::cout << "Copy address" << std::endl;
               fprintf(tracemem, "Copy address %x\n", (void*)(sorted_index[i]+ offset));
-              // break;
+              
+              // if (index==5){
+              //   break;
+              // }
             }
             
             // memcpy((void*)(sorted_index[i]+ offset), (void*)&temp, 1);
@@ -1195,7 +1200,10 @@ VOID AfterCrush()
           // std::cout << 
           // std::cout << (unsigned int)data << std::endl;
         }
-        // break;
+        index++;
+        if (index==10){
+          break;
+        }
         // std::cout << "end!" << std::endl;
         // std::cout << "addr is " << sorted_index[i] << std::endl;
         // std::cout << sorted_index.size() << std::endl;
@@ -1750,7 +1758,7 @@ VOID RecordMemRead(VOID * ip, VOID * addr){
                  {
          	        char *cstr = new char[filename1.length() + 1];
               	    strcpy(cstr, filename1.c_str());
-                   fprintf(traceins,"\n\n happens in 0x%x #%s : line %d column %d\n",(ADDRINT)ip,cstr,line, column);
+                   fprintf(traceins,"R happens in 0x%x #%s : line %d column %d in address %x\n",(ADDRINT)ip,cstr,line, column, addr);
                  }
     fprintf(trace,"%x: R %x\n", ip, addr);
     PIN_UnlockClient();
@@ -1771,7 +1779,7 @@ VOID RecordMemWrite(VOID * ip, VOID * addr){
                  {
          	        char *cstr = new char[filename1.length() + 1];
               	    strcpy(cstr, filename1.c_str());
-                   fprintf(traceins,"\n\n happens in 0x%x #%s : line %d column %d\n",(ADDRINT)ip,cstr,line, column);
+                   fprintf(traceins,"W happens in 0x%x #%s : line %d column %d in address %x\n",(ADDRINT)ip,cstr,line, column, addr);
                  }
     
     fprintf(trace,"%x: W %x\n", ip, addr);
