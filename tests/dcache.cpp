@@ -80,6 +80,9 @@ static bool crush_flag = false;
 UINT8 threadnum;
 UINT8 pcachenum;
 
+UINT32 low_bound;
+UINT32 up_bound;
+
 //for output result
 UINT32 crash_line = 0;
 
@@ -159,6 +162,13 @@ KNOB<UINT32>   KnobCacheL2Associativity(KNOB_MODE_WRITEONCE, "pintool",
 
 KNOB<UINT32>   KnobCacheL2LineSize(KNOB_MODE_WRITEONCE, "pintool",
     "-l2", "64", "l2 cacheline size in bytes");
+
+KNOB<UINT32>   KnobLowerBound(KNOB_MODE_WRITEONCE, "pintool",
+    "-lb", "0", "what is lower bound");
+
+KNOB<UINT32>   KnobUpperBound(KNOB_MODE_WRITEONCE, "pintool",
+    "-ub", "0", "what is upper bound");
+
 /*
 KNOB<UINT32>   KnobCacheL3Size(KNOB_MODE_WRITEONCE, "pintool",
     "-s3", "4", "l3 cache size in bytes in megabytes");
@@ -1142,8 +1152,6 @@ VOID AfterCrush()
        // }
     // }
 
-
-
     std::vector<ADDRINT> sorted_index;
     for (auto it = memory.main_memory.begin(); it != memory.main_memory.end(); it++) {
       sorted_index.emplace_back(it->first);
@@ -1153,11 +1161,44 @@ VOID AfterCrush()
       return i < j;
     });
 
-    memiter = KnobMemoryWrite.Value();
-    std::cout << memiter << std::endl;
 
-    std::cout << sorted_index.size() << std::endl;
-    for (size_t i = 0; i < sorted_index.size(); i++) {
+    memiter = KnobMemoryWrite.Value();
+    low_bound = KnobLowerBound.Value();
+    up_bound = KnobUpperBound.Value();
+    std::cout << low_bound << " loweravkbdsljfsalkfdsa " << up_bound << std::endl;
+
+    std::cout << "sorted size is " << sorted_index.size() << std::endl;
+    int count = 0;
+    for (UINT32 i = low_bound; i <= up_bound; i++) {
+      int offset = 0;
+      std::cout << "sorted_index[i] size " << memory.main_memory[sorted_index[i]].size() << "  ";
+      for (const UINT8& data : memory.main_memory[sorted_index[i]]) {
+        UINT8 temp = data;
+        // std::cout << "test: " << (int)temp << std::endl;
+        if (data != 0) {
+          int copy_size = PIN_SafeCopy((void*)&temp, (void*)&temp, 1);
+          // std::cout << "test: " << (int)temp << " " << copy_size << std::endl;
+          if (copy_size > 0) {
+            PIN_SafeCopy((void*)(sorted_index[i] + offset), (void*)&temp, 1);
+            // std::cout << "Copy address" << std::endl;
+            fprintf(tracemem, "Copy address %x\n", (void*)(sorted_index[i] + offset));
+            // break;
+          }
+          
+          // memcpy((void*)(sorted_index[i]+ offset), (void*)&temp, 1);
+        }
+        offset++;
+        // temp[j++] = data;
+        // std::cout << 
+        // std::cout << (unsigned int)data << std::endl;
+      }
+      count++;
+      // if (count == 5) {
+      //   break;
+      // }
+    }
+    std::cout << std::endl;
+    // for (size_t i = 0; i < sorted_index.size(); i++) {
       // for (int j = 0; j < 64; j++) {
         // boost::array<UINT8, BLOCK_SIZE> temp = it->second;
         // ADDRINT
@@ -1176,26 +1217,7 @@ VOID AfterCrush()
         //   continue;
         // }
         // if (memory.main_memory[sorted_index[i]] 
-        int offset = 0;
-        for (const UINT8& data : memory.main_memory[sorted_index[i]]) {
-          UINT8 temp = data;
-          if (data != 0) {
-            int copy_size = PIN_SafeCopy((void*)&temp, (void*)&temp, 1);
-            if (copy_size > 0) {
-              PIN_SafeCopy((void*)(sorted_index[i]+ offset), (void*)&temp, 1);
-             // std::cout << "Copy address" << std::endl;
-              fprintf(tracemem, "Copy address %x\n", (void*)(sorted_index[i]+ offset));
-              // break;
-            }
-            
-            // memcpy((void*)(sorted_index[i]+ offset), (void*)&temp, 1);
-          }
-          offset++;
-          // temp[j++] = data;
-          // std::cout << 
-          // std::cout << (unsigned int)data << std::endl;
-        }
-        // break;
+        
         // std::cout << "end!" << std::endl;
         // std::cout << "addr is " << sorted_index[i] << std::endl;
         // std::cout << sorted_index.size() << std::endl;
@@ -1210,7 +1232,7 @@ VOID AfterCrush()
         
         // *((int*)(it->first+j)) = 0;
       // }
-    }
+    // }
 
     //seperate consistent data
     for(UINT16 i = 0; i<consistent_variable.size(); i++)
@@ -1746,11 +1768,12 @@ VOID RecordMemRead(VOID * ip, VOID * addr){
     //INT32 column;
     PIN_LockClient();
    PIN_GetSourceLocation((ADDRINT)ip, &column, &line, &filename1);
+   //std::cout << filename1;
     if(!filename1.empty())
                  {
          	        char *cstr = new char[filename1.length() + 1];
               	    strcpy(cstr, filename1.c_str());
-                   fprintf(traceins,"\n\n happens in 0x%x #%s : line %d column %d\n",(ADDRINT)ip,cstr,line, column);
+                   fprintf(traceins,"R happens in 0x%x #%s : line %d column %d in address %x\n",(ADDRINT)ip,cstr,line, column, addr);
                  }
     fprintf(trace,"%x: R %x\n", ip, addr);
     PIN_UnlockClient();
@@ -1771,7 +1794,7 @@ VOID RecordMemWrite(VOID * ip, VOID * addr){
                  {
          	        char *cstr = new char[filename1.length() + 1];
               	    strcpy(cstr, filename1.c_str());
-                   fprintf(traceins,"\n\n happens in 0x%x #%s : line %d column %d\n",(ADDRINT)ip,cstr,line, column);
+                   fprintf(traceins,"W happens in 0x%x #%s : line %d column %d in address %x\n",(ADDRINT)ip,cstr,line, column, addr);
                  }
     
     fprintf(trace,"%x: W %x\n", ip, addr);
@@ -2112,7 +2135,6 @@ INT32 Usage()
 }
 
 int main(int argc, char* argv[]) {
-
     //srand((unsigned)time(NULL));
     rand_crush = 10*INS_MAX + 1;
     //rand_crush = Random(INS_MAX);
@@ -2136,8 +2158,23 @@ int main(int argc, char* argv[]) {
     ClientInit(argc, argv);
     // Intialize CCTLib
 
-    tracemem = fopen("pinatrace_mem.out", "w");
-    traceins=fopen("pinatrace_ins.out", "w");
+
+
+    // printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! %s\n", var);
+    // printf("??????????????????????????? %s\n", strcat(name1, var));
+
+    // std::itoa(lower_bound, var, 10);
+    const UINT32 lb = KnobLowerBound.Value();
+    cout << "LB is " << lb << endl;
+    char name1[100] = "pinatrace_mem.out.";
+    char name2[100] = "pinatrace_ins.out.";
+    char var[10];
+    sprintf(var, "%d", lb);
+    tracemem = fopen(strcat(strcat(name1, var), ".txt"), "w");
+    traceins = fopen(strcat(strcat(name2, var), ".txt"), "w");
+
+    // tracemem = fopen("pinatrace_mem.out", "w");
+    // traceins = fopen("pinatrace_ins.out", "w");
 
     PinCCTLibInit(INTERESTING_INS_ALL, gTraceFile, InstrumentInsCallback, 0);
     TraceFile.open(KnobOutputFile.Value().c_str());

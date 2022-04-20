@@ -1,0 +1,15 @@
+
+/home/vagrant/NVC/pin-2.14-71313-gcc.4.4.7-linux/intel64/bin/pinbin -p32 /home/vagrant/NVC/pin-2.14-71313-gcc.4.4.7-linux/ia32/bin/pinbin -t obj-intel64//dcache.so -_lb 0 -_ub 10 -- /home/vagrant/NVC/Benchmarks/CrashTests/NPB3.3-OMP-C/bin/lh.A.x 2 200 
+*************** Dump Data from Thread 0 ****************
+
+50112:0x7fd76cb554a0:xor %eax, %eax:_IO_default_doallocate::0
+50111:0x7fd76cb55566:callq  0x7fd76cb554a0:_IO_default_doallocate::0
+50101:0x7fd76cb513d2:callq  0x7fd76cb55550:vsnprintf::0
+50081:0x7fd76cb2fe1d:callq  0x7fd76cb51390:snprintf::0
+50050:0x400cdd:callq  0x400ad0:main:/home/vagrant/NVC/Benchmarks/CrashTests/NPB3.3-OMP-C/LH/lh.c:68
+33869:0x7fd76cb00b43:callq  %rax:__libc_start_main::0
+33094:0x401018:callq  0x400b00:_start::0
+1:(nil)::THREAD[0]_ROOT_CTXT::0online collection time 2.984351, offline analysis time 0.016624
+
+Total call paths=82389
+Peak RSS=703512
